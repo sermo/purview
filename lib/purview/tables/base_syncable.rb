@@ -9,6 +9,10 @@ module Purview
         Purview::Indices::Simple.new(created_timestamp_column)
       end
 
+      def earliest_timestamp
+        opts[:earliest_timestamp] || puller.earliest_timestamp
+      end
+
       def id_column
         column_from_opts_of_type(Purview::Columns::Id) or raise %{Must specify a column of type: "#{Purview::Columns::Id}"}
       end

@@ -7,6 +7,14 @@ module Purview
         end
       end
 
+      def earliest_timestamp
+        with_new_connection do |connection|
+          result = connection.execute('SELECT MIN(%s) earliest_timestamp FROM %s' %
+            [table.updated_timestamp_column.source_name, table_name])
+          result.rows.first.earliest_timestamp
+        end
+      end
+
       private
 
       include Purview::Mixins::Connection
