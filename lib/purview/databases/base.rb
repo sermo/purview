@@ -251,6 +251,10 @@ module Purview
 
       public :connect
 
+      def baseline_window
+        opts[:baseline_window]
+      end
+
       def column_definition(column)
         column.name.to_s.tap do |column_definition|
           type = type(column)
@@ -446,6 +450,11 @@ module Purview
         )
         max = min + table.window_size
         now = timestamp
+        highest_min = now - table.window_size
+        min = [min, highest_min].min
+        if max < highest_min && baseline_window.present?
+          max = min + baseline_window
+        end
         min > now ? nil : Purview::Structs::Window.new(
           :min => min,
           :max => max > now ? now : max
