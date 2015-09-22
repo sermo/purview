@@ -43,7 +43,7 @@ module Purview
         message_template(!!exception) % {
           :exception => format_exception(exception),
           :level => level,
-          :message => message,
+          :message => message[0..message_length],
           :process_id => Process.pid,
           :timestamp => Time.now.strftime('%Y-%m-%d %H:%M:%S.%L %z'),
         }
@@ -93,6 +93,10 @@ module Purview
 
       def stream
         opts[:stream]
+      end
+
+      def message_length
+        opts[:message_length] || -1
       end
     end
   end
