@@ -100,6 +100,10 @@ module Purview
         rows.map { |row| structify_row(row) }
       end
 
+      def timeout
+        opts[:timeout]
+      end
+
       def update?(sql)
         !!(sql.to_s =~ /\AUPDATE/i)
       end

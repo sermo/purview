@@ -558,6 +558,10 @@ module Purview
         opts[:tables] || []
       end
 
+      def timeout
+        opts[:timeout]
+      end
+
       def type(column)
         type_map[column.type]
       end
