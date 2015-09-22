@@ -113,11 +113,15 @@ module Purview
       end
 
       def in_window_sql(window)
-        '%s BETWEEN %s AND %s' % [
-          table.updated_timestamp_column.source_name,
-          quoted(window.min),
-          quoted(window.max)
-        ]
+        if window.nil?
+          '%s IS NULL' % table.updated_timestamp_column.source_name
+        else
+          '%s BETWEEN %s AND %s' % [
+            table.updated_timestamp_column.source_name,
+            quoted(window.min),
+            quoted(window.max)
+          ]
+        end
       end
     end
   end

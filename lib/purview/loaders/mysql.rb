@@ -15,19 +15,27 @@ module Purview
       end
 
       def in_window_sql(window)
-        '%s BETWEEN %s AND %s' % [
-          table.updated_timestamp_column.name,
-          quoted(window.min),
-          quoted(window.max),
-        ]
+        if window.nil?
+          '%s IS NULL' % table.updated_timestamp_column.name
+        else
+          '%s BETWEEN %s AND %s' % [
+            table.updated_timestamp_column.name,
+            quoted(window.min),
+            quoted(window.max),
+          ]
+        end
       end
 
       def not_in_window_sql(window)
-        '%s NOT BETWEEN %s AND %s' % [
-          table.updated_timestamp_column.name,
-          quoted(window.min),
-          quoted(window.max),
-        ]
+        if window.nil?
+          '%s IS NOT NULL' % table.updated_timestamp_column.name
+        else
+          '%s NOT BETWEEN %s AND %s' % [
+            table.updated_timestamp_column.name,
+            quoted(window.min),
+            quoted(window.max),
+          ]
+        end
       end
 
       def table_delete_sql(window, temporary_table_name)

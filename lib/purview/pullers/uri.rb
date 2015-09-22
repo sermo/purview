@@ -76,8 +76,13 @@ module Purview
       end
 
       def windowed_request_uri(window, page_number, page_size)
+        min, max = nil
+        if window.present?
+          min = window.min.to_i
+          max = window.max.to_i
+        end
         request_uri << 'ts1=%s&ts2=%s&page=%s&page_size=%s' %
-          [window.min.to_i, window.max.to_i, page_number, page_size]
+          [min, max, page_number, page_size]
       end
     end
   end
