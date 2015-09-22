@@ -18,14 +18,19 @@ module Purview
       end
 
       def sync(connection, window)
-        raw_data = puller.pull(window)
-        parser.validate(raw_data)
-        parsed_data = parser.parse(raw_data)
-        loader.load(
-          connection,
-          parsed_data,
-          window
-        )
+        temporary_table_name = loader.create_temporary_table(connection)
+        page_number = 0
+        while raw_data = puller.pull(window, (page_number += 1), sync_page_size)
+          parser.validate(raw_data)
+          parsed_data = parser.parse(raw_data)
+          loader.load_temporary_table(connection, temporary_table_name, parsed_data)
+          break if parsed_data.length < sync_page_size
+        end
+        loader.load(connection, window, temporary_table_name)
+      end
+
+      def sync_page_size
+        opts[:sync_page_size] || 100000
       end
 
       def temporary_name

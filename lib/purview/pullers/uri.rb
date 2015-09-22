@@ -1,8 +1,8 @@
 module Purview
   module Pullers
     class URI < Base
-      def pull(window)
-        request = get_request(windowed_request_uri(window))
+      def pull(window, page_number, page_size)
+        request = get_request(windowed_request_uri(window, page_number, page_size))
         with_context_logging("`pull` from: #{request.path}") do
           http.request(request).body
         end
@@ -75,8 +75,9 @@ module Purview
         opts[:username]
       end
 
-      def windowed_request_uri(window)
-        request_uri << 'ts1=%s&ts2=%s' % [window.min.to_i, window.max.to_i]
+      def windowed_request_uri(window, page_number, page_size)
+        request_uri << 'ts1=%s&ts2=%s&page=%s&page_size=%s' %
+          [window.min.to_i, window.max.to_i, page_number, page_size]
       end
     end
   end
