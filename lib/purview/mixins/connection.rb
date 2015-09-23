@@ -12,6 +12,7 @@ module Purview
           :password => database_password,
           :port => database_port,
           :username => database_username,
+          :timeout => timeout
         }
       end
 

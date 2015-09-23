@@ -18,6 +18,10 @@ module Purview
       def table
         opts[:table]
       end
+
+      def timeout
+        opts[:timeout]
+      end
     end
   end
 end

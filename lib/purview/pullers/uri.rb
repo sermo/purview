@@ -24,6 +24,9 @@ module Purview
             http.use_ssl = true
             http.verify_mode = OpenSSL::SSL::VERIFY_NONE
           end
+          if timeout.present?
+            http.read_timeout = timeout
+          end
         end
       end
 
