@@ -564,6 +564,7 @@ module Purview
 
       def type_map
         {
+          Purview::Types::Bigint => 'bigint',
           Purview::Types::Boolean => 'boolean',
           Purview::Types::Date => 'date',
           Purview::Types::Float => 'float',
