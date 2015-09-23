@@ -267,8 +267,8 @@ module Purview
 
       public :connect
 
-      def baseline_window
-        opts[:baseline_window]
+      def baseline_window_size
+        opts[:baseline_window_size]
       end
 
       def column_definition(column)
@@ -459,22 +459,20 @@ module Purview
       end
 
       def next_window(connection, table, timestamp)
-        min = get_table_metadata_value(
+        now = timestamp
+        window_size = table.window_size
+        highest_min = now - window_size
+        current_min = get_table_metadata_value(
           connection,
           table,
           table_metadata_table.max_timestamp_pulled_column
         )
-        max = min + table.window_size
-        now = timestamp
-        highest_min = now - table.window_size
-        min = [min, highest_min].min
-        if max < highest_min && baseline_window.present?
-          max = min + baseline_window
+        if current_min < highest_min && baseline_window_size.present?
+          window_size = baseline_window_size
         end
-        min > now ? nil : Purview::Structs::Window.new(
-          :min => min,
-          :max => max > now ? now : max
-        )
+        min = [current_min, highest_min].min
+        max = [min + window_size, now].min
+        Purview::Structs::Window.new(:min => min, :max => max)
       end
 
       def nullable?(column)
