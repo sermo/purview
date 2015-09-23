@@ -25,7 +25,9 @@ if defined?(Mysql2)
               :host => host.to_s,
               :password => password.to_s,
               :port => port,
-              :username => username.to_s
+              :read_timeout => timeout,
+              :username => username.to_s,
+              :write_timeout => timeout
             )
           )
         end

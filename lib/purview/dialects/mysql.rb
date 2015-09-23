@@ -14,7 +14,7 @@ module Purview
       end
 
       def sanitized(value)
-        value.nil? ? null_value : value.sanitized
+        value.nil? ? nil : value.sanitized
       end
 
       def true_value

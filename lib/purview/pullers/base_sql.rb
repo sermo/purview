@@ -1,9 +1,17 @@
 module Purview
   module Pullers
     class BaseSQL < Base
-      def pull(window)
+      def pull(window, page_number, page_size)
         with_new_connection do |connection|
-          connection.execute(pull_sql(window) + additional_sql)
+          connection.execute(pull_sql(window, page_number, page_size))
+        end
+      end
+
+      def earliest_timestamp
+        with_new_connection do |connection|
+          result = connection.execute('SELECT MIN(%s) earliest_timestamp FROM %s' %
+            [table.updated_timestamp_column.source_name, table_name])
+          result.rows.first.earliest_timestamp
         end
       end
 
@@ -54,18 +62,66 @@ module Purview
         raise %{All "#{BaseSQL}(s)" must override the "dialect_type" method}
       end
 
-      def pull_sql(window)
-        'SELECT %s FROM %s WHERE %s BETWEEN %s AND %s' % [
-          column_names.join(', '),
-          table_name,
-          table.updated_timestamp_column.name,
-          quoted(window.min),
-          quoted(window.max),
-        ]
+      def is_function?
+        opts[:is_function] || false
+      end
+
+      def pull_sql(window, page_number, page_size)
+        start_row = ((page_number - 1) * page_size) + 1
+        end_row = start_row + page_size - 1
+        if is_function?
+          <<-SQL
+            SELECT #{column_names.join(', ')}
+            FROM #{table_name}
+              (
+                #{quoted(window.min)},
+                #{quoted(window.max)},
+                #{page_number},
+                #{page_size}
+              )
+          SQL
+        else
+          <<-SQL
+            SELECT #{column_names.join(', ')}
+            FROM (
+              SELECT *, #{row_number_sql(page_number, page_size)} row_num
+              FROM #{table_name}
+              WHERE
+                #{in_window_sql(window)}
+                #{additional_sql}
+                #{row_limit_sql(page_number, page_size)}
+            ) a
+            WHERE row_num BETWEEN #{start_row} AND #{end_row}
+          SQL
+        end
+      end
+
+      def row_limit_sql(page_number, page_size)
+        <<-SQL
+          ORDER BY #{table.id_column.source_name}
+          LIMIT #{page_size}
+          OFFSET #{(page_number - 1) * page_size}
+        SQL
+      end
+
+      def row_number_sql(page_number, page_size)
+        #{page_number * page_size}
       end
 
       def table_name
         opts[:table_name]
+      end
+
+      def in_window_sql(window)
+        if window.nil?
+          '%s IS NULL' % table.updated_timestamp_column.source_name
+        else
+          '%s BETWEEN %s AND %s' % [
+            table.updated_timestamp_column.source_name,
+            quoted(window.min),
+            quoted(window.max)
+          ]
+        end
       end
     end
   end

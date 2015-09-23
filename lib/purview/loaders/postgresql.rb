@@ -15,19 +15,27 @@ module Purview
       end
 
       def in_window_sql(window)
-        '%s BETWEEN %s AND %s' % [
-          table.updated_timestamp_column.name,
-          quoted(window.min),
-          quoted(window.max),
-        ]
+        if window.nil?
+          '%s IS NULL' % table.updated_timestamp_column.name
+        else
+          '%s BETWEEN %s AND %s' % [
+            table.updated_timestamp_column.name,
+            quoted(window.min),
+            quoted(window.max),
+          ]
+        end
       end
 
       def not_in_window_sql(window)
-        '%s NOT BETWEEN %s AND %s' % [
-          table.updated_timestamp_column.name,
-          quoted(window.min),
-          quoted(window.max),
-        ]
+        if window.nil?
+          '%s IS NOT NULL' % table.updated_timestamp_column.name
+        else
+          '%s NOT BETWEEN %s AND %s' % [
+            table.updated_timestamp_column.name,
+            quoted(window.min),
+            quoted(window.max),
+          ]
+        end
       end
 
       def table_delete_sql(window, temporary_table_name)
@@ -73,7 +81,7 @@ module Purview
         super.merge(:create_indices => false)
       end
 
-      def temporary_table_verify_sql(temporary_table_name, rows, window)
+      def temporary_table_verify_sql(temporary_table_name, window)
         'SELECT COUNT(1) %s FROM %s WHERE %s' % [
           count_column_name,
           temporary_table_name,

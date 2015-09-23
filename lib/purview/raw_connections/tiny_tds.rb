@@ -25,6 +25,7 @@ if defined?(TinyTds)
               :host => host.to_s,
               :password => password.to_s,
               :port => port,
+              :timeout => timeout,
               :username => username.to_s
             )
           )
