@@ -1,3 +1,18 @@
+Release 1.6.0 (2015-09-23)
+--------------------------
+
+* Support syncing null updated dates
+* Allow ad-hoc sql execution (support creating views etc)
+* Allow for larger window sizes during baseline and syncing
+* Support sql functions returning data
+* Implement paging when pulling data
+* Add ability to pull earliest_timestamp from source
+* Add message length option to logger
+* Handle nulls correctly (was converting NULL to 'NULL')
+* Add timeout option to all pullers
+* Puller should use source name for updated time stamp
+* Add bigint sql type support
+
 Release 1.5.0 (2015-06-12)
 --------------------------
 
