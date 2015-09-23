@@ -1,0 +1,8 @@
+---
+DEFAULTS: &DEFAULTS
+  database: purview_test
+  username: purview
+  password: supersecret
+postgres:
+  host: localhost
+  port: <%= ENV['PURVIEW_POSTGRES_TEST_PORT'] %>
