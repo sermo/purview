@@ -27,4 +27,5 @@ Gem::Specification.new do |gem|
   gem.add_development_dependency 'pry', '~> 0.10'
   gem.add_development_dependency 'rake', '~> 10.4'
   gem.add_development_dependency 'rspec', '~> 3.2'
+  gem.add_development_dependency 'dotenv', '~> 2.0.2'
 end

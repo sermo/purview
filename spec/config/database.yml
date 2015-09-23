@@ -1,8 +1,13 @@
 ---
 DEFAULTS: &DEFAULTS
-  database: purview_test
-  username: purview
-  password: supersecret
+  database: <%= ENV['PURVIEW_DBNAME'] %>
+  username: <%= ENV['PURVIEW_USERNAME'] %>
+  password: <%= ENV['PURVIEW_PASSWORD'] %>
 postgres:
-  host: localhost
-  port: <%= ENV['PURVIEW_POSTGRES_TEST_PORT'] %>
+  <<: *DEFAULTS
+  host: <%= ENV['PURVIEW_POSTGRESQL_HOST'] %>
+  port: <%= ENV['PURVIEW_POSTGRESQL_PORT'] %>
+mysql:
+  <<: *DEFAULTS
+  host: <%= ENV['PURVIEW_MYSQL_HOST'] %>
+  port: <%= ENV['PURVIEW_MYSQL_PORT'] %>

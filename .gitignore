@@ -31,3 +31,6 @@ build/
 .ruby-version
 .rvmrc
 Gemfile.lock
+
+# local environment overrides
+.env.local*

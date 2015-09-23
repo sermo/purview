@@ -12,4 +12,6 @@ group :development do
   end
 end
 
+gem 'dotenv', :groups => [:development, :test]
+
 gemspec
