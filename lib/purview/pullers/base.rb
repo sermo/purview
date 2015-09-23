@@ -5,6 +5,10 @@ module Purview
         @opts = opts
       end
 
+      def earliest_timestamp
+        raise %{All "#{Base}(s)" must override the "earliest_timestamp" method}
+      end
+
       def pull(window)
         raise %{All "#{Base}(s)" must override the "pull" method}
       end
