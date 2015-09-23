@@ -19,7 +19,7 @@ if defined?(PG)
         end
 
         def new_connection
-          ::PG.connect(
+          conn = ::PG.connect(
             filter_nil_values(
               :dbname => database,
               :host => host,
@@ -28,6 +28,10 @@ if defined?(PG)
               :user => username
             )
           )
+          if timeout.present?
+            conn.exec("SET statement_timeout = #{timeout}")
+          end
+          conn
         end
 
         def username

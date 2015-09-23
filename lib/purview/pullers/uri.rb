@@ -1,9 +1,16 @@
 module Purview
   module Pullers
     class URI < Base
-      def pull(window)
-        request = windowed_request(window)
+      def pull(window, page_number, page_size)
+        request = get_request(windowed_request_uri(window, page_number, page_size))
         with_context_logging("`pull` from: #{request.path}") do
+          http.request(request).body
+        end
+      end
+
+      def earliest_timestamp
+        request = get_request(earliest_request_uri)
+        with_context_logging("`earliest_timestamp` from: #{request.path}") do
           http.request(request).body
         end
       end
@@ -12,6 +19,18 @@ module Purview
 
       def basic_auth?
         username && password
+      end
+
+      def earliest_request_uri
+        request_uri << 'earliest_timestamp=true'
+      end
+
+      def get_request(url)
+        Net::HTTP::Get.new(url).tap do |request|
+          if basic_auth?
+            request.basic_auth(username, password)
+          end
+        end
       end
 
       def host
@@ -23,6 +42,9 @@ module Purview
           if https?
             http.use_ssl = true
             http.verify_mode = OpenSSL::SSL::VERIFY_NONE
+          end
+          if timeout.present?
+            http.read_timeout = timeout
           end
         end
       end
@@ -39,6 +61,12 @@ module Purview
         uri.port
       end
 
+      def request_uri
+        uri.to_s.tap do |request_uri|
+          request_uri << (request_uri.include?('?') ? '&' : '?')
+        end
+      end
+
       def uri
         ::URI.parse(opts[:uri])
       end
@@ -47,19 +75,14 @@ module Purview
         opts[:username]
       end
 
-      def windowed_request(window)
-        Net::HTTP::Get.new(windowed_request_uri(window)).tap do |request|
-          if basic_auth?
-            request.basic_auth(username, password)
-          end
+      def windowed_request_uri(window, page_number, page_size)
+        min, max = nil
+        if window.present?
+          min = window.min.to_i
+          max = window.max.to_i
         end
-      end
-
-      def windowed_request_uri(window)
-        uri.to_s.tap do |request_uri|
-          request_uri << (request_uri.include?('?') ? '&' : '?')
-          request_uri << 'ts1=%s&ts2=%s' % [window.min.to_i, window.max.to_i]
-        end
+        request_uri << 'ts1=%s&ts2=%s&page=%s&page_size=%s' %
+          [min, max, page_number, page_size]
       end
     end
   end

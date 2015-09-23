@@ -5,7 +5,11 @@ module Purview
         @opts = opts
       end
 
-      def pull(window)
+      def earliest_timestamp
+        raise %{All "#{Base}(s)" must override the "earliest_timestamp" method}
+      end
+
+      def pull(window, page_number, page_size)
         raise %{All "#{Base}(s)" must override the "pull" method}
       end
 
@@ -17,6 +21,10 @@ module Purview
 
       def table
         opts[:table]
+      end
+
+      def timeout
+        opts[:timeout]
       end
     end
   end

@@ -34,7 +34,7 @@ Set the table-name (this can be anything, but it must exist)
 table_name = :users
 ```
 
-Define the `Column(s)` (available column-types: `Boolean`, `CreatedTimestamp`,
+Define the `Column(s)` (available column-types: `Bigint`, `Boolean`, `CreatedTimestamp`,
 `Date`, `Float`, `Id`, `Integer`, `Money`, `String`, `Text`, `Time`, `Timestamp`,
 `UpdatedTimestamp` & `UUID` -- the `Id`, `CreatedTimestamp` & `UpdatedTimestamp`
 columns are required for all `BaseSyncable` tables)

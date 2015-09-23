@@ -46,11 +46,14 @@ module Purview
         end
 
         def new_connection
-          java.sql.DriverManager.getConnection(
-            url,
-            username,
-            password
-          )
+          conn_properties = java.util.Properties.new
+          conn_properties.setProperty('user', username)
+          conn_properties.setProperty('password', password)
+          if timeout.present?
+            conn_properties.setProperty('timeout', timeout)
+          end
+
+          java.sql.DriverManager.getConnection(url, conn_properties)
         end
 
         def url

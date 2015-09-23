@@ -156,6 +156,14 @@ module Purview
         table_name
       end
 
+      def execute_ad_hoc_sql(sql)
+        with_context_logging("`ad_hoc_sql` execution") do
+          with_new_connection do |connection|
+            connection.execute(sql)
+          end
+        end
+      end
+
       def initialize_table(table, timestamp=timestamp)
         ensure_table_valid_for_database(table)
         table_name = table_name(table)
@@ -205,6 +213,14 @@ module Purview
         table_name
       end
 
+      def sync_table_nulls(table)
+        with_new_connection do |connection|
+          with_transaction(connection) do
+            table.sync(connection, nil)
+          end
+        end
+      end
+
       def table_metadata(table)
         ensure_table_valid_for_database(table)
         table_metadata = nil
@@ -250,6 +266,10 @@ module Purview
       attr_reader :opts
 
       public :connect
+
+      def baseline_window_size
+        opts[:baseline_window_size]
+      end
 
       def column_definition(column)
         column.name.to_s.tap do |column_definition|
@@ -439,17 +459,20 @@ module Purview
       end
 
       def next_window(connection, table, timestamp)
-        min = get_table_metadata_value(
+        now = timestamp
+        window_size = table.window_size
+        highest_min = now - window_size
+        current_min = get_table_metadata_value(
           connection,
           table,
           table_metadata_table.max_timestamp_pulled_column
         )
-        max = min + table.window_size
-        now = timestamp
-        min > now ? nil : Purview::Structs::Window.new(
-          :min => min,
-          :max => max > now ? now : max
-        )
+        if current_min < highest_min && baseline_window_size.present?
+          window_size = baseline_window_size
+        end
+        min = [current_min, highest_min].min
+        max = [min + window_size, now].min
+        Purview::Structs::Window.new(:min => min, :max => max)
       end
 
       def nullable?(column)
@@ -558,12 +581,17 @@ module Purview
         opts[:tables] || []
       end
 
+      def timeout
+        opts[:timeout]
+      end
+
       def type(column)
         type_map[column.type]
       end
 
       def type_map
         {
+          Purview::Types::Bigint => 'bigint',
           Purview::Types::Boolean => 'boolean',
           Purview::Types::Date => 'date',
           Purview::Types::Float => 'float',
