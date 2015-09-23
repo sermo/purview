@@ -213,6 +213,14 @@ module Purview
         table_name
       end
 
+      def sync_table_nulls(table)
+        with_new_connection do |connection|
+          with_transaction(connection) do
+            table.sync(connection, nil)
+          end
+        end
+      end
+
       def table_metadata(table)
         ensure_table_valid_for_database(table)
         table_metadata = nil
