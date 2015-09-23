@@ -9,6 +9,7 @@ module Purview
         {
           :database => database_name,
           :host => database_host,
+          :logger => logger_opts,
           :password => database_password,
           :port => database_port,
           :username => database_username,
