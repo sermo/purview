@@ -62,21 +62,38 @@ module Purview
         raise %{All "#{BaseSQL}(s)" must override the "dialect_type" method}
       end
 
+      def is_function?
+        opts[:is_function] || false
+      end
+
       def pull_sql(window, page_number, page_size)
         start_row = ((page_number - 1) * page_size) + 1
         end_row = start_row + page_size - 1
-        <<-SQL
-          SELECT #{column_names.join(', ')}
-          FROM (
-            SELECT *, #{row_number_sql(page_number, page_size)} row_num
+        if is_function?
+          <<-SQL
+            SELECT #{column_names.join(', ')}
             FROM #{table_name}
-            WHERE
-              #{in_window_sql(window)}
-              #{additional_sql}
-              #{row_limit_sql(page_number, page_size)}
-          ) a
-          WHERE row_num BETWEEN #{start_row} AND #{end_row}
-        SQL
+              (
+                #{quoted(window.min)},
+                #{quoted(window.max)},
+                #{page_number},
+                #{page_size}
+              )
+          SQL
+        else
+          <<-SQL
+            SELECT #{column_names.join(', ')}
+            FROM (
+              SELECT *, #{row_number_sql(page_number, page_size)} row_num
+              FROM #{table_name}
+              WHERE
+                #{in_window_sql(window)}
+                #{additional_sql}
+                #{row_limit_sql(page_number, page_size)}
+            ) a
+            WHERE row_num BETWEEN #{start_row} AND #{end_row}
+          SQL
+        end
       end
 
       def row_limit_sql(page_number, page_size)
