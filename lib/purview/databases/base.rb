@@ -156,6 +156,14 @@ module Purview
         table_name
       end
 
+      def execute_ad_hoc_sql(sql)
+        with_context_logging("`ad_hoc_sql` execution") do
+          with_new_connection do |connection|
+            connection.execute(sql)
+          end
+        end
+      end
+
       def initialize_table(table, timestamp=timestamp)
         ensure_table_valid_for_database(table)
         table_name = table_name(table)
