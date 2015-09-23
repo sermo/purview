@@ -9,7 +9,7 @@ module Purview
         raise %{All "#{Base}(s)" must override the "earliest_timestamp" method}
       end
 
-      def pull(window)
+      def pull(window, page_number, page_size)
         raise %{All "#{Base}(s)" must override the "pull" method}
       end
 
