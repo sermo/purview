@@ -58,7 +58,7 @@ module Purview
         'SELECT %s FROM %s WHERE %s BETWEEN %s AND %s' % [
           column_names.join(', '),
           table_name,
-          table.updated_timestamp_column.name,
+          table.updated_timestamp_column.source_name,
           quoted(window.min),
           quoted(window.max),
         ]
