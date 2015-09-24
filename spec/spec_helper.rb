@@ -2,9 +2,10 @@ require 'rspec'
 
 require 'purview'
 
-# dotenv helps us keep the test db environment settings sorted out
 require 'dotenv'
-Dotenv.load('.env.test', '.env.local')
+Dotenv.load('.env.local.test', '.env.test')
+
+require 'support/helpers/raw_connection_helper'
 
 RSpec.configure do |config|
   config.color_enabled = true if config.respond_to?(:color_enabled)
