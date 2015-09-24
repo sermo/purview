@@ -49,7 +49,7 @@ module Purview
           conn_properties = java.util.Properties.new
           conn_properties.setProperty('user', username)
           conn_properties.setProperty('password', password)
-          if timeout.present?
+          unless timeout.nil?
             conn_properties.setProperty('timeout', timeout)
           end
 

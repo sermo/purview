@@ -467,7 +467,7 @@ module Purview
           table,
           table_metadata_table.max_timestamp_pulled_column
         )
-        if current_min < highest_min && baseline_window_size.present?
+        unless current_min > highest_min || baseline_window_size.nil?
           window_size = baseline_window_size
         end
         min = [current_min, highest_min].min
