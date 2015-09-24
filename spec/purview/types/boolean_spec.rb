@@ -14,7 +14,7 @@ describe Purview::Types::Boolean do
       end
     end
 
-    it 'parses falsey boolean values to true' do
+    it 'parses falsey boolean values to false' do
       aggregate_failures do
         expect(type.parse('false')).to be false
         expect(type.parse('False')).to be false
