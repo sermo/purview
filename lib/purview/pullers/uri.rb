@@ -43,7 +43,7 @@ module Purview
             http.use_ssl = true
             http.verify_mode = OpenSSL::SSL::VERIFY_NONE
           end
-          if timeout.present?
+          unless timeout.nil?
             http.read_timeout = timeout
           end
         end
@@ -77,7 +77,7 @@ module Purview
 
       def windowed_request_uri(window, page_number, page_size)
         min, max = nil
-        if window.present?
+        unless window.nil?
           min = window.min.to_i
           max = window.max.to_i
         end

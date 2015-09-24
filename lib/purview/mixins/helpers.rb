@@ -17,10 +17,6 @@ module Purview
         hash.reject { |_, value| value.nil? }
       end
 
-      def present?(value)
-        !blank?(value)
-      end
-
       def timestamp
         Time.now
       end

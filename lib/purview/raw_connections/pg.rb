@@ -28,7 +28,7 @@ if defined?(PG)
               :user => username
             )
           )
-          if timeout.present?
+          unless timeout.nil?
             conn.exec("SET statement_timeout = #{timeout}")
           end
           conn
