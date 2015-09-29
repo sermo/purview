@@ -14,7 +14,7 @@ describe Purview::RawConnections::PG do
     it 'prevents further queries from executing' do
       pg.disconnect
 
-      expect { pg.execute('SELECT * FROM test_items') }.to raise_error
+      expect { pg.execute('SELECT * FROM test_items') }.to raise_error(NoMethodError)
     end
   end
 end

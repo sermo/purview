@@ -9,6 +9,10 @@ module RawConnectionHelper
     }
   end
 
+  def db_config_convert(opts)
+    Hash[opts.map { |k, v| [('database_' + k.to_s).to_sym, v] }]
+  end
+
   def mysql_connection_config
     {
       :database => ENV['PURVIEW_MYSQL_DBNAME'],

@@ -21,8 +21,9 @@ def spin_up_dbs
   create_pg_db(pg_config)
   pg_conn = ::PG.connect(pg_config)
   pg_conn.exec('DROP TABLE IF EXISTS test_items')
-  pg_conn.exec('CREATE TABLE test_items(i char(1))')
+  pg_conn.exec('CREATE TABLE test_items(i char(1), n bigint, created_at timestamp default now(), updated_at timestamp default now())')
   pg_conn.exec("INSERT INTO test_items(i) VALUES('a')")
+  pg_conn.exec("INSERT INTO test_items(i, n, updated_at) VALUES('a', 12345678900, null)")
   q=Purview::RawConnections::PG.new(postgresql_connection_config)
   puts q.execute('SELECT * FROM test_items')
 end
