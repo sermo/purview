@@ -1,7 +1,13 @@
 describe Purview::Databases::PostgreSQL do
   subject(:db) do
-    db_config = db_config_convert(postgresql_connection_config)
-    db_config[:database_name] = db_config.delete(:database_database)
+    Purview::Databases::PostgreSQL.new(
+      postgresql_connection_config[:database],
+      db_config
+        .merge(db_options)
+        .merge({ :tables => tables })
+    )
+  end
+  let(:tables) {
     puller_opts = db_config.merge({
       :type => Purview::Pullers::PostgreSQL,
       :table_name => table_name,
@@ -20,20 +26,19 @@ describe Purview::Databases::PostgreSQL do
       :puller => puller_opts,
       #:earliest_timestamp => earliest_timestamp
     }
-    tables = [
+    [
       Purview::Tables::Raw.new('test_items_spec', tbl_opts)
     ]
-    Purview::Databases::PostgreSQL.new(
-      postgresql_connection_config[:database],
-      db_config
-        .merge(db_options)
-        .merge({ :tables => tables })
-    )
-  end
+  }
   let(:db_options) { {
       #:logger => { :message_length => 750 },
       #:baseline_window_size => THREE_MONTHS
   } }
+  let(:db_config) {
+    config = db_config_convert(postgresql_connection_config)
+    config[:database_name] = db_config.delete(:database_database)
+    config
+  }
   let(:table_name) { 'test_items' }
   let(:table_columns) {
     []
@@ -48,7 +53,8 @@ describe Purview::Databases::PostgreSQL do
 
   describe 'support bigint data type TODO: move to types/...' do
     it 'can store bigint values' do
-
+      table = tables[1]
+      table.create
     end
   end
 end
