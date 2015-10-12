@@ -105,7 +105,7 @@ module Purview
       end
 
       def row_number_sql(page_number, page_size)
-        #{page_number * page_size}
+        page_number * page_size
       end
 
       def table_name
