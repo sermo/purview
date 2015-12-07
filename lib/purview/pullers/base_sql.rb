@@ -74,8 +74,8 @@ module Purview
             SELECT #{column_names.join(', ')}
             FROM #{table_name}
               (
-                #{quoted(window.min)},
-                #{quoted(window.max)},
+                #{window.nil? ? 'NULL' : quoted(window.min)},
+                #{window.nil? ? 'NULL' : quoted(window.max)},
                 #{page_number},
                 #{page_size}
               )
