@@ -76,8 +76,8 @@ module Purview
               (
                 #{window.nil? ? 'NULL' : quoted(window.min)},
                 #{window.nil? ? 'NULL' : quoted(window.max)},
-                #{page_number},
-                #{page_size}
+                #{page_size},
+                #{page_number}
               )
           SQL
         else
