@@ -1,6 +1,10 @@
 module Purview
   module Tables
     class BaseSyncable < Base
+      def baseline_window_size
+        opts[:baseline_window_size]
+      end
+
       def created_timestamp_column
         column_from_opts_of_type(Purview::Columns::CreatedTimestamp) or raise %{Must specify a column of type: "#{Purview::Columns::CreatedTimestamp}"}
       end

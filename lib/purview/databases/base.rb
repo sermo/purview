@@ -267,10 +267,6 @@ module Purview
 
       public :connect
 
-      def baseline_window_size
-        opts[:baseline_window_size]
-      end
-
       def column_definition(column)
         column.name.to_s.tap do |column_definition|
           type = type(column)
@@ -467,8 +463,8 @@ module Purview
           table,
           table_metadata_table.max_timestamp_pulled_column
         )
-        unless current_min > highest_min || baseline_window_size.nil?
-          window_size = baseline_window_size
+        unless current_min > highest_min || table.baseline_window_size.nil?
+          window_size = table.baseline_window_size
         end
         min = [current_min, highest_min].min
         max = [min + window_size, now].min
